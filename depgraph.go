@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -57,12 +58,12 @@ func New(build, path string) (*Graph, error) {
 	var err error
 
 	if strings.HasPrefix(path, "http") {
-		data, err = cacheDownload(300*time.Hour, path, filepath.Basename(path))
+		data, err = cacheDownload(300*time.Hour, path, filepath.Base(path), false)
 		if err != nil {
 			return nil, errors.Wrap(err, "problem downloading file")
 		}
 	} else if _, err = os.Stat(path); os.IsNotExist(err) {
-		return nil, errors.Errorsf("could not find file %s", path)
+		return nil, errors.Errorf("could not find file %s", path)
 	} else {
 		data, err = ioutil.ReadFile(path)
 		if err != nil {
@@ -73,7 +74,7 @@ func New(build, path string) (*Graph, error) {
 	g := &Graph{}
 
 	if err = json.Unmarshal(data, g); err != nil {
-		return errors.Wrap(err, "problem reading json")
+		return nil, errors.Wrap(err, "problem reading json")
 	}
 
 	g.BuildID = build
