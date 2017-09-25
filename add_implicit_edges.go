@@ -52,12 +52,12 @@ func (g *Graph) addImplicitEdgesForNode(n Node) {
 				continue
 			}
 
-			for _, lib := range libs {
-				if lib == n.Name {
+			for _, nodeRel := range libs.ToNodes {
+				if nodeRel.Name == n.Name {
 					continue
 				}
 
-				deps[lib] = struct{}{}
+				deps[nodeRel.Name] = struct{}{}
 			}
 		}
 	}
